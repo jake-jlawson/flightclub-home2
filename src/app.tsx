@@ -1,5 +1,5 @@
 // Imports
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route, HashRouter } from 'react-router-dom';
 
@@ -7,11 +7,19 @@ import './index.css';
 import GameScreen from './screens/GameScreen/GameScreen';
 import Killer from './games/killer/Killer';
 
+import { loadGames } from './games/gameManager';
+
 /**
  * Main App component
  */
 function App(): React.ReactElement {
     const [activeGame, setActiveGame] = useState<React.ReactElement | null>(null);
+
+    useEffect(() => {
+        loadGames().then((games) => {
+            console.log(games);
+        });
+    }, []);
     
     return (
         <div id="app">
