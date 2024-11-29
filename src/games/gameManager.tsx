@@ -9,7 +9,7 @@
 /**Imports */
 import { getGameFolderName } from "../utils/fileLoadUtils";
 
-interface IGameData {
+interface IGameData { //interface for game data in game.json
     _comment?: string;
     name: string;
     description: string;
@@ -25,14 +25,14 @@ interface IGameData {
  * @description Represents a game
  */
 class Game {   
-    public id: string; //unique identifier
-    public name: string; //name of the game
-    public description: string; //description of the game
+    public id: string; 
+    public name: string;
+    public description: string;
     public logo: File; //main logo
     public tile: File; //tile, to present in game selection
     
     private gradient: {start: string; end: string}; //gradient for background
-    private entry_point: React.ReactElement; //entry point of the game
+    private entry_point: React.ReactElement; //entry point of the game (main react component)
 
     /**
      * Constructor
@@ -58,6 +58,7 @@ class Game {
 
     public showEntryPoint(): React.ReactElement {
         if (!this.entry_point) {
+            // handle no entry point
             console.error("No entry point found for game", this.name);
             return (
                 <h1>This game has no entry point. Make sure your game has a working [game_name].tsx file in the game folder.</h1>
@@ -70,7 +71,7 @@ class Game {
     public getGradient(): string {
         if (!this.gradient) {
             console.error("No gradient found for game", this.name);
-            return "#ffffff";
+            return "linear-gradient(180deg, #ffffff 0%, #ffffff 50%)";
         } else {
             return `linear-gradient(180deg, ${this.gradient.start} 0%, ${this.gradient.end} 50%)`;
         }
@@ -101,7 +102,6 @@ function loadGames(): any {
                     gameFolders.set(gameId, {});
                 }
             }
-            
         });
 
         return loadedGames;

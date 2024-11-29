@@ -43,7 +43,7 @@ export function GameWindowProvider({ children }: { children: React.ReactNode }):
     // Set the game window root element
     useEffect(() => {
         if (gameWindow) {
-            const intervalId = setInterval(() => {
+            const intervalId = setInterval(() => { // wait until game root is rendered
                 const root = gameWindow.document.getElementById('game-window-root');
                 if (root) {
                     setGameWindowRoot(root);
@@ -65,12 +65,12 @@ export function GameWindowProvider({ children }: { children: React.ReactNode }):
         return gameWindowRoot ? ReactDOM.createPortal(children, gameWindowRoot) : <></>;
     };
 
+
     // context value
     const contextValue: GameWindowContextType = {
         openGameWindow: openGameWindow,
         GameWindow: GameWindow,
     };
-    
     
     return (
         <GameWindowContext.Provider value={contextValue}>

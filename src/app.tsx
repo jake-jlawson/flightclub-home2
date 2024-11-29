@@ -7,27 +7,33 @@ import './index.css';
 import GameScreen from './screens/GameScreen/GameScreen';
 import Killer from './games/killer/Killer';
 
-import { loadGames } from './games/gameManager';
+import { Game, loadGames } from './games/gameManager';
 
 /**
  * Main App component
  */
 function App(): React.ReactElement {
-    const [activeGame, setActiveGame] = useState<React.ReactElement | null>(null);
+    const [games, setGames] = useState<Game[]>([]);
+    const [activeGame, setActiveGame] = useState<Game | null>(null);
 
+    //load games
     useEffect(() => {
-        loadGames().then((games) => {
-            console.log(games);
-        });
+        setGames(loadGames());
     }, []);
     
     return (
         <div id="app">
             <HashRouter>
                 <Routes>
-                    <Route path="/" element={<GameScreen game={<Killer />}/>} />
-                    <Route path="/play" element={<GameScreen game={activeGame}/>} />
-                    <Route path="/game-window" element={<div id="game-window-root"></div>} />
+                    <Route path="/" element={
+                        <GameScreen game={<Killer />}/>
+                    } />
+                    <Route path="/play" element={
+                        <GameScreen game={activeGame?.showEntryPoint()}/>
+                    } />
+                    <Route path="/game-window" element={
+                        <div id="game-window-root"></div>
+                    } />
                 </Routes>
             </HashRouter>
         </div>
