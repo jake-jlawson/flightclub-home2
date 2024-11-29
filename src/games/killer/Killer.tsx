@@ -9,14 +9,31 @@ import { useEffect } from 'react';
 import { useGameContext } from '../../contexts/GameContext';
 import { useGameWindow } from '../../contexts/GameWindowContext';
 
+// Utils
+import { angleToScore, scoreToAngle } from '../../utils/dartBoardUtils';
+
+
 
 
 export default function Killer(): React.ReactElement {
     
-    // Handle game window
+    // Get context values
     const { openGameWindow, GameWindow } = useGameWindow();
+
+    const { setGameConfig } = useGameContext();
+
+
+    // Initialise the game
     useEffect(() => {
-        openGameWindow();
+        openGameWindow(); // open the game window
+        
+        // game config
+        setGameConfig({ 
+            maxRounds: 10 
+        }); 
+
+        console.log(angleToScore(190));
+        console.log(scoreToAngle("18"));
     }, []);
     
     
