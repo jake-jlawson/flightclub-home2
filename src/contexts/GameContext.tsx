@@ -10,12 +10,12 @@ import { createContext, useContext, useState, useEffect } from 'react';
 /**
  * Types
  */
-type GameContextType = {
+type GameContextType = { //game context type
     round: number;
     setGameConfig: (config: IGameConfig) => void;
 };
 
-interface IGameConfig {
+interface IGameConfig { //interface for game config object
     maxRounds: number
 }
 
@@ -41,7 +41,7 @@ export function GameContextProvider({ children }: { children: React.ReactNode })
     const [config, setConfig] = useState<IGameConfig | null>(null);
 
 
-    const setGameConfig = (config: any) => {
+    const setGameConfig = (config: IGameConfig) => {
         setConfig(config);
     };
 

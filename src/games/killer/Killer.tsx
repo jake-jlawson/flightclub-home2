@@ -31,9 +31,6 @@ export default function Killer(): React.ReactElement {
         setGameConfig({ 
             maxRounds: 10 
         }); 
-
-        console.log(angleToScore(190));
-        console.log(scoreToAngle("18"));
     }, []);
     
     
