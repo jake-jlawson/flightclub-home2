@@ -8,6 +8,7 @@ import GameScreen from './screens/GameScreen/GameScreen';
 import Killer from './games/killer/Killer';
 
 import { Game, loadGames } from './games/gameManager';
+import { GameWindowProvider } from './contexts/GameWindowContext';
 
 /**
  * Main App component
@@ -20,17 +21,28 @@ function App(): React.ReactElement {
     useEffect(() => {
         setGames(loadGames());
     }, []);
+
+    useEffect(() => {
+        setActiveGame(games[0]);
+    }, [games]);
     
     return (
         <div id="app">
             <HashRouter>
                 <Routes>
-                    <Route path="/" element={
-                        <GameScreen game={<Killer />}/>
-                    } />
+                    {/* Primary Routes */}
                     <Route path="/play" element={
-                        <GameScreen game={activeGame?.showEntryPoint()}/>
+                        <GameScreen game={null}/>
                     } />
+                    <Route path="/" element={
+                        activeGame ? 
+                            (<GameWindowProvider>
+                                <GameScreen game={activeGame}/> 
+                            </GameWindowProvider>)
+                        : null
+                    } />
+
+                    {/* Game Window */}
                     <Route path="/game-window" element={
                         <div id="game-window-root"></div>
                     } />
@@ -40,5 +52,10 @@ function App(): React.ReactElement {
     );
 }
 
-const root = createRoot(document.body);
+// Create a container element for the app
+const container = document.createElement('div');
+container.id = 'app-root';
+document.body.appendChild(container);
+
+const root = createRoot(container);
 root.render(<App />);

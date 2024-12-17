@@ -7,17 +7,25 @@
  */
 
 /**Imports */
+import { createElement } from "react";
 import { getGameFolderName } from "../utils/fileLoadUtils";
 
 interface IGameData { //interface for game data in game.json
     _comment?: string;
     name: string;
     description: string;
+    long_description: string;
+    
+    entry_point: string;
 
     gradient: {
         start: string;
         end: string;
     }
+}
+
+interface GameComponentProps {
+    game: Game;
 }
 
 /**
@@ -32,12 +40,12 @@ class Game {
     public tile: File; //tile, to present in game selection
     
     private gradient: {start: string; end: string}; //gradient for background
-    private entry_point: React.ReactElement; //entry point of the game (main react component)
+    private entry_point: React.ComponentType<GameComponentProps>; //entry point of the game (main react component)
 
     /**
      * Constructor
      */
-    constructor(id: string, data: IGameData, logo: File, tile: File, entry_point: React.ReactElement) {
+    constructor(id: string, data: IGameData, logo: File, tile: File, entry_point: React.ComponentType<GameComponentProps>) {
         this.id = id;
         this.logo = logo;
         this.tile = tile;
@@ -56,15 +64,15 @@ class Game {
         this.gradient = gameData.gradient;
     }
 
-    public showEntryPoint(): React.ReactElement {
+    public getEntryPoint(): React.ReactElement {
         if (!this.entry_point) {
             // handle no entry point
             console.error("No entry point found for game", this.name);
-            return (
+            return (<>
                 <h1>This game has no entry point. Make sure your game has a working [game_name].tsx file in the game folder.</h1>
-            );
+            </>);
         } else {
-            return this.entry_point;
+            return <this.entry_point game={this} />;
         }
     }
 
@@ -85,27 +93,65 @@ class Game {
  * @returns {Game[]} - Array of games
  */
 function loadGames(): any {
+    const gameContext = require.context("../games", true, /\.(json|tsx|png|jpg)$/);
+    const loadedGames: Game[] = [];
+
+    const games: { [gameName: string]: string[] } = {};
+
+    // Iterate over all file paths in the context to get all game folders
+    gameContext.keys().forEach((filepath) => {
+        // Extract the game name (subfolder name)
+        const parts = filepath.split('/');
+        const folderName = parts[1];  // Assuming the folder is at the second level
+
+        // Skip the "_gametemplate" folder or any non-folder entries (like files in the root of the games directory)
+        if (folderName === "_gametemplate" || parts.length < 3) {
+            return;  // Skip this file
+        }
+
+        // Initialize an array for each game if not already initialized
+        if (!games[folderName]) {
+            games[folderName] = [];
+        }
+
+        // Add the file to the corresponding game's array
+        games[folderName].push(filepath);
+    });
+
+    // Load games from the games folder
     try {
-        const loadedGames: Game[] = [];
-        const gameContext = require.context("../games", true, /\.(json|tsx|png|jpg)$/);
-
-        // Map to track game assets by folder
-        const gameFolders = new Map<string, { json?: string; tsx?: string; logo?: string; tile?: string }>();
-
-        //iterate over all game folders
-        gameContext.keys().forEach((filepath) => {
-            const gameFolderName = getGameFolderName(filepath);
+        // Create game objects for each of the games and add them to the loadedGames array
+        Object.entries(games).forEach(([gameName, files]) => {
+            //find game.json file for each game
+            const jsonFile = files.find(file => file.endsWith("game.json"));
+            const gameData = jsonFile ? gameContext(jsonFile) : null;
             
-            if (gameFolderName) {
-                const gameId = gameFolderName;
-                if (!gameFolders.has(gameId)) { // if game folder not already in map add it
-                    gameFolders.set(gameId, {});
+            //find logo
+            const logoFile = files.find(file => file.endsWith("logo.png"));
+            const logo = logoFile ? gameContext(logoFile) : null;
+
+            //find tile
+            const tileFile = files.find(file => file.endsWith("tile.png"));
+            const tile = tileFile ? gameContext(tileFile) : null;
+
+            //find entry point
+            let entryPointModule = null;
+            if (gameData && gameData.entry_point) {
+                const entryPointFile = "./" + gameName + "/" + gameData.entry_point;
+                try {
+                    entryPointModule = gameContext(entryPointFile);
+                } catch (error) {
+                    entryPointModule = null;
                 }
             }
+            console.log(entryPointModule.default);
+            
+            //create game object
+            const game = new Game(gameName, gameData, logo, tile, entryPointModule.default);
+            loadedGames.push(game);
         });
 
-        return loadedGames;
-
+        return loadedGames;  // Return the grouped games (optional)
     } catch (error) {
         console.error("Error loading games:", error);
     }

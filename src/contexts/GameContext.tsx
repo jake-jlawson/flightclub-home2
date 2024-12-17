@@ -32,12 +32,13 @@ export function useGameContext(): GameContextType {
 export function GameContextProvider({ children }: { children: React.ReactNode }): React.ReactElement {
     
     /** STATES
-     * @var {int} round - the current round number
-     * @var {boolean} gameActive - whether the game is active (sets to false when game is over)
      * @var {object} config - default game configuration, to be set by the game
+     * @var {boolean} gameActive - whether the game is active (sets to false when game is over)
+     * @var {int} round - the current round number
+     * @var {array} teams - the teams playing the game
      */
     const [round, setRound] = useState<number>(1);
-    const [gameOver, setGameOver] = useState<boolean>(true);
+    const [gameActive, setGameActive] = useState<boolean>(true);
     const [config, setConfig] = useState<IGameConfig | null>(null);
 
 

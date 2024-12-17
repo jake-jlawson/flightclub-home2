@@ -1,7 +1,7 @@
 /**
  * @context GameWindowContext
  * @description Global window context api accessible to any game that is being played
- * - Allows games to access a second window to display game screens
+ * - Allows games to access a second window to display game screens as well as control screens
  */
 
 /*Imports*/
@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom';
  */
 type GameWindowContextType = {
     openGameWindow: () => void;
-    GameWindow: ({ children }: { children: React.ReactNode }) => React.ReactElement;
+    GameWindow: ({ children, style }: { children: React.ReactNode, style?: React.CSSProperties }) => React.ReactElement;
 };
 
 // Create and expose context
@@ -59,9 +59,11 @@ export function GameWindowProvider({ children }: { children: React.ReactNode }):
      * @param children 
      * @returns a component which renders its children in the game window
      */
-    const GameWindow = (
-        { children }: { children: React.ReactNode }
-    ): React.ReactElement => { // game window component
+    const GameWindow = ({ 
+        children, 
+    }: { 
+        children?: React.ReactNode;
+    }): React.ReactElement => {
         return gameWindowRoot ? ReactDOM.createPortal(children, gameWindowRoot) : <></>;
     };
 

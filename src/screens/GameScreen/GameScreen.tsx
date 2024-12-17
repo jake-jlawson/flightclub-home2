@@ -1,18 +1,29 @@
+/**
+ * @screen GameScreen
+ * @description App Screen for displaying a game
+ */
 
 // Imports
-import styles from './GameScreen.module.css';
+import { useEffect } from 'react';
+import { Game } from '../../games/gameManager';
+import { useGameWindow } from '../../contexts/GameWindowContext';
 
 // Contexts
 import { GameContextProvider } from '../../contexts/GameContext';
-import { GameWindowProvider } from '../../contexts/GameWindowContext';
 
 
-export default function GameScreen({ game }: { game: React.ReactNode }): React.ReactElement {
+export default function GameScreen({ game }: { game: Game }): React.ReactElement {
+    
+    //open the game window
+    const { openGameWindow } = useGameWindow();
+
+    useEffect(() => {
+        openGameWindow();
+    }, []);
+
     return (
         <GameContextProvider>
-            <GameWindowProvider>
-                {game}
-            </GameWindowProvider>
+            {game.getEntryPoint()}
         </GameContextProvider>
     );
 }

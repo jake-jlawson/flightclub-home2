@@ -3,6 +3,9 @@
 
     "name": "Killer",
     "description": "Hit your own number 3 times before targetting your opponents number",
+    "long_description": "",
+
+    "entry_point": "Killer.tsx",
 
     "gradient": {
         "start": "#3b1218",
